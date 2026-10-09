@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<module>
+    <name>wisoexport</name>
+    <displayName>WISO EÜR Export</displayName>
+    <version>1.0.0</version>
+    <author>Community</author>
+    <description>Export invoices for WISO EÜR & Kasse</description>
+</module>
