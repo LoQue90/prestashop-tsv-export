@@ -1,5 +1,10 @@
 # Changelog
 
+## 1.1.1
+
+- Exportseite zeigt den ausgewählten Bestellstatus, Nullbetragsfilter und die Berücksichtigung negativer Rechnungsbeträge an.
+- Deutsche und englische README auf Installation und Bedienung ausgerichtet.
+
 ## 1.1.0
 
 - PrestaShop-Kompatibilität für 9.1.x einschließlich 9.1.5 deklariert; Versionsangaben vereinheitlicht.

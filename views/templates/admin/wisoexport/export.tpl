@@ -41,7 +41,30 @@
 
         <div class="alert alert-info">
 
-            {l s='Es gelten die Filter aus den Moduleinstellungen. Negative Rechnungsbeträge bleiben beim Ausschluss von Nullbeträgen enthalten.' mod='wisoexport'}
+            <strong>{l s='Exportfilter' mod='wisoexport'}</strong>
+            <ul>
+                <li>
+                    {l s='Bestellstatus:' mod='wisoexport'}
+                    {if $wiso_use_status_filter}
+                        {if $wiso_status_name}
+                            {$wiso_status_name|escape:'html':'UTF-8'}
+                        {else}
+                            {l s='Kein Bestellstatus ausgewählt. Bitte die Moduleinstellungen prüfen.' mod='wisoexport'}
+                        {/if}
+                    {else}
+                        {l s='Alle Bestellstatus' mod='wisoexport'}
+                    {/if}
+                </li>
+                <li>
+                    {l s='Nullbeträge:' mod='wisoexport'}
+                    {if $wiso_exclude_zero}
+                        {l s='ausgeschlossen' mod='wisoexport'}
+                    {else}
+                        {l s='enthalten' mod='wisoexport'}
+                    {/if}
+                </li>
+                <li>{l s='Negative Rechnungsbeträge: enthalten' mod='wisoexport'}</li>
+            </ul>
 
         </div>
 

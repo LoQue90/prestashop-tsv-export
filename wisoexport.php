@@ -9,7 +9,7 @@ class Wisoexport extends Module
     public function __construct()
     {
         $this->name = 'wisoexport';
-        $this->version = '1.1.0';
+        $this->version = '1.1.1';
         $this->ps_versions_compliancy = ['min' => '9.1.0', 'max' => '9.1.99'];
         $this->author = 'Community';
         $this->tab = 'administration';

@@ -29,6 +29,22 @@ class AdminWisoExportController extends ModuleAdminController
     public function initContent()
     {
         parent::initContent();
+        $useStatusFilter = (bool) Configuration::get('WISOEXPORT_USE_STATUS_FILTER');
+        $statusId = (int) Configuration::get('WISOEXPORT_ORDER_STATE');
+        $statusName = '';
+        if ($useStatusFilter) {
+            foreach (OrderState::getOrderStates((int) $this->context->language->id) as $state) {
+                if ((int) $state['id_order_state'] === $statusId) {
+                    $statusName = (string) $state['name'];
+                    break;
+                }
+            }
+        }
+        $this->context->smarty->assign([
+            'wiso_use_status_filter' => $useStatusFilter,
+            'wiso_status_name' => $statusName,
+            'wiso_exclude_zero' => (bool) Configuration::get('WISOEXPORT_EXCLUDE_ZERO'),
+        ]);
         $this->setTemplate('wisoexport/export.tpl');
     }
 
