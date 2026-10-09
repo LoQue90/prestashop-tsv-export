@@ -171,4 +171,4 @@ Die Einstellung **Umsatzsteuerart** bestimmt den Wert in der TSV-Datei:
 
 ## Lizenz
 
-[GPL-3.0-or-later](LICENSE). Der ursprüngliche Lizenzhinweis des Moduls ist in [LICENSE.notice](LICENSE.notice) enthalten.
+[GPL-3.0-or-later](LICENSE).
