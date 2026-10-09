@@ -119,7 +119,7 @@ Die Datei enthält keine Kopfzeile.
 Beispiel:
 
 ```
-Einnahme	10.02.2025	REG25000007	Warenverkauf	10,99 €	NULL	8195	1200
+Einnahme	10.02.2025	RE25000007	Warenverkauf	10,99 €	NULL	8195	1200
 ```
 
 Die Felder sind:
@@ -145,10 +145,10 @@ Die Rechnungsnummer wird automatisch erzeugt aus:
 Präfix + zweistelliges Jahr + laufende Nummer
 ```
 
-Beispiel:
+Generisches Beispiel mit dem frei gewählten Präfix `RE`, dem Rechnungsjahr 2025 und einer sechsstelligen laufenden Nummer:
 
 ```
-REG + 25 + 000007 = REG25000007
+RE + 25 + 000007 = RE25000007
 ```
 
 Das Jahr wird aus dem Rechnungsdatum der Rechnung übernommen.
