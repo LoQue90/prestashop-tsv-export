@@ -1,174 +1,106 @@
-# PrestaShop WISO EÜR Export
+# WISO EÜR Export für PrestaShop
 
-Ein PrestaShop-Modul zum Export von Rechnungen als TSV-Datei für den Import in **WISO EÜR & Kasse**.
+[English](README.en.md) · [Releases](https://github.com/LoQue90/prestashop-tsv-export/releases) · [Changelog](CHANGELOG.md)
 
-Der Import erfolgt über die Software [Buchungsimport](https://www.buchungsimport.de/).
-
----
-
-## Unterstützte Versionen
-
-* PrestaShop 9.1.x
-
----
+Exportiert Rechnungen aus PrestaShop als TSV für **WISO EÜR & Kasse** über [Buchungsimport](https://www.buchungsimport.de/).
 
 ## Funktionen
 
-* Export von Rechnungen nach Zeitraum
-* Optionaler Filter nach Bestellstatus
-* Standardstatus nach Installation: Versand
-* TSV-Datei ohne Kopfzeile
-* UTF-8 ohne BOM
-* WISO-kompatibles Format
-* Unterstützung für:
+- Export nach Rechnungsdatum mit Prüfung des gewählten Zeitraums.
+- Optionaler Filter nach aktuellem Bestellstatus.
+- Option **„Rechnungen mit Betrag 0 ausschließen“**; negative Beträge bleiben enthalten.
+- Rechnungsnummern über die PrestaShop-Kernfunktion, einschließlich optionaler Formatierungs-Hooks.
+- Einstellbare Buchungsbezeichnung, Sachkonto, Geldkonto und Umsatzsteuerart.
+- Bei `Netto` wird der Nettorechnungsbetrag exportiert; bei `Brutto` und `NULL` der Bruttorechnungsbetrag.
+- TSV mit acht Spalten, ohne Kopfzeile und BOM, mit UTF-8 und CRLF-Zeilenenden.
 
-  * Kleinunternehmer (`NULL`)
-  * Brutto
-  * Netto
-* Konfigurierbare Konten
-* Konfigurierbare Bezeichnung
-* Automatische Rechnungsnummernformatierung
-* Historische Rechnungsnummern bleiben korrekt
-* Jahreswechsel wird automatisch berücksichtigt
+## Voraussetzungen
 
----
+Die Kompatibilitätsangabe umfasst **PrestaShop 9.1.x einschließlich 9.1.5**. Die PHP-Version muss zu deiner PrestaShop-Installation passen. Die GitHub Action prüft Syntax und Regressionstests unter PHP 8.1–8.4. Ein vollständiger Installationstest mit PrestaShop-Datenbank und ein WISO-Import sind nicht Bestandteil dieser Tests.
 
-## Installation
+**Kein zusätzliches Rechnungsnummern-Modul erforderlich.** WISO Export funktioniert eigenständig. Ist ein Formatter über PrestaShops regulären Hook aktiv, berücksichtigt PrestaShop ihn automatisch. Es gibt keine direkte Abhängigkeit, keine gemeinsam gelesenen Moduleinstellungen und keine eingebundenen Dateien eines anderen Moduls.
 
-Die Moduldateien liegen direkt im Hauptverzeichnis dieses Repositories. Für die Installation muss das ZIP dagegen einen übergeordneten Ordner namens `wisoexport/` enthalten.
+## Installation und Update
 
-1. Repository über **Code → Download ZIP** herunterladen und entpacken.
-2. Den entpackten Repository-Ordner in `wisoexport` umbenennen und diesen Ordner als `wisoexport.zip` komprimieren. Bei einem lokalen Git-Checkout `.git/` nicht mitpacken.
+1. Unter [Releases](https://github.com/LoQue90/prestashop-tsv-export/releases/latest) das Asset **`wisoexport-v1.1.0.zip`** herunterladen.
+2. In PrestaShop **Module → Modulmanager → Modul hochladen** öffnen.
+3. Die ZIP hochladen und das Modul installieren beziehungsweise aktualisieren.
+4. Über **Konfigurieren** die Export-Einstellungen prüfen.
 
-Die Installations-ZIP muss folgende Struktur enthalten:
+Zum Aktualisieren das Modul **nicht deinstallieren**, damit vorhandene Einstellungen erhalten bleiben. Der neue Nullbetragsfilter ist standardmäßig deaktiviert, auch beim Update.
 
-```
-wisoexport/
-├── wisoexport.php
-├── config.xml
-├── controllers/
-├── src/
-├── views/
-└── translations/
-```
+Die von GitHub automatisch angebotenen **Source code**-Archive sind keine fertig gepackten Modul-ZIPs. Das Release-Asset enthält den benötigten Ordner `wisoexport/` mit `wisoexport.php` direkt darin. Eine SHA-256-Prüfsumme liegt ebenfalls bei.
 
-3. PrestaShop Backend öffnen:
+## Einstellungen
 
-```
-Module
-→ Modulmanager
-→ Modul hochladen
-```
+| Einstellung | Bedeutung |
+| --- | --- |
+| Rechnungen mit Betrag 0 ausschließen | Entfernt exakt `0` beim Bruttorechnungsbetrag. Positive und negative Beträge bleiben enthalten. Standard: aus. |
+| Bezeichnung | Text für die Buchung in WISO. |
+| Sachkonto | Einnahmekonto für den Import. |
+| Geldkonto | Bank- oder Verrechnungskonto für den Import. |
+| Bestellstatus verwenden | Aktiviert den Filter nach dem aktuellen Bestellstatus. |
+| Bestellstatus für Export | Status, der bei aktiviertem Filter berücksichtigt wird. Nach Installation wird „Versand“ gesucht; andernfalls bitte einen Status auswählen oder den Filter deaktivieren. |
+| Umsatzsteuerart | `NULL`, `Brutto` oder `Netto`. Standard: `NULL`. |
 
-4. `wisoexport.zip` auswählen und installieren.
-
----
-
-## Konfiguration
-
-Nach der Installation:
-
-```
-Module
-→ WISO EÜR Export
-→ Konfigurieren
-```
-
-Folgende Einstellungen stehen zur Verfügung:
-
-| Feld                    | Beschreibung                                   |
-| ----------------------- | ---------------------------------------------- |
-| Basis-Präfix            | Fester Bestandteil der Rechnungsnummer         |
-| Nummernlänge            | Anzahl der Stellen der laufenden Nummer        |
-| Bezeichnung             | Buchungsbezeichnung für WISO                   |
-| Sachkonto               | Einnahmekonto                                  |
-| Geldkonto               | Verrechnungskonto / Bankkonto                  |
-| Umsatzsteuerart         | NULL, Brutto oder Netto                        |
-| Bestellstatus verwenden | Aktiviert oder deaktiviert die Statusfilterung |
-| Bestellstatus           | Status, der exportiert werden soll             |
-
-Der Standardwert für den Bestellstatus ist **Versand**.
-
----
+Die Umsatzsteuerart bestimmt das Exportfeld und die Auswahl des gespeicherten Brutto-/Nettobetrags. Das Modul berechnet keine neuen Steuern. Konten und Importzuordnung müssen zu deiner Buchhaltung passen.
 
 ## Export
 
-Der Export befindet sich im Menü:
+Unter **Bestellungen → WISO EÜR Export** ein Von- und Bis-Datum auswählen. Beide Tage sind vollständig eingeschlossen; Von darf nicht nach Bis liegen. Die Abfrage verwendet das **Rechnungsdatum**, nicht Zahlungs- oder Versanddatum, und berücksichtigt den aktuellen Shop-Kontext.
 
-```
-Bestellungen
-→ WISO EÜR Export
-```
+Beispiel-Dateiname: `WISO_EUR_2025-01-01_bis_2025-12-31.tsv`.
 
-Zeitraum auswählen und Export starten.
+Sind nach Anwendung der Filter keine Rechnungen vorhanden, erscheint eine Meldung statt einer leeren Datei.
 
-Die Datei wird als TSV-Datei heruntergeladen.
+### TSV-Format
 
-Beispiel-Dateiname:
+| Spalte | Inhalt |
+| --- | --- |
+| 1 | Buchungsart: `Einnahme` |
+| 2 | Rechnungsdatum: `TT.MM.JJJJ` |
+| 3 | Von PrestaShop formatierte Rechnungsnummer |
+| 4 | Konfigurierte Bezeichnung |
+| 5 | Betrag mit Dezimalkomma und `€`, einschließlich eines möglichen Minuszeichens |
+| 6 | Umsatzsteuerart: `NULL`, `Brutto` oder `Netto` |
+| 7 | Sachkonto |
+| 8 | Geldkonto |
 
-```
-WISO_EUR_2025-01-01_bis_2025-12-31.tsv
-```
+Generisches Beispiel (die Felder sind durch Tabulatoren getrennt):
 
----
-
-## Exportformat
-
-Die Datei enthält keine Kopfzeile.
-
-Beispiel:
-
-```
-Einnahme	10.02.2025	RE25000007	Warenverkauf	10,99 €	NULL	8195	1200
+```text
+Einnahme	10.02.2025	RE000007	Warenverkauf	10,99 €	NULL	8195	1200
 ```
 
-Die Felder sind:
+### Rechnungsnummern
 
-| Position | Inhalt          |
-| -------- | --------------- |
-| 1        | Buchungsart     |
-| 2        | Rechnungsdatum  |
-| 3        | Rechnungsnummer |
-| 4        | Bezeichnung     |
-| 5        | Betrag          |
-| 6        | Umsatzsteuerart |
-| 7        | Sachkonto       |
-| 8        | Geldkonto       |
+Der Export ruft `OrderInvoice::getInvoiceNumberFormatted()` für die jeweilige Rechnung mit Bestellsprache und Shop-ID auf. Ohne zusätzliches Modul gilt das PrestaShop-Standardformat; mit aktivem Formatierungs-Hook dessen Ergebnis. Das Präfix `RE` im Beispiel ist frei gewählt.
 
----
+Seit Version 1.1.0 entfallen die eigenen Exportfelder für Präfix und Nummernlänge. Alte gespeicherte Werte werden nicht mehr verwendet. Die Nummer wird zur Exportzeit anhand der aktuellen Shop-/Hook-Konfiguration formatiert; eine unveränderliche historische Zeichenfolge wird nicht separat gespeichert. Nach späteren Formatänderungen kann sich deshalb auch die Darstellung älterer Rechnungen ändern.
 
-## Rechnungsnummer
+### Umfang und Grenzen
 
-Die Rechnungsnummer wird automatisch erzeugt aus:
+- Exportiert werden nummerierte Rechnungen aus `order_invoice`. Separate Gutschriften/Rückerstattungsbelege aus `order_slip` sind nicht enthalten.
+- Negative Rechnungsbeträge bleiben erhalten und werden als negative `Einnahme` ausgegeben. Die Zuordnung sollte im verwendeten Importprofil geprüft werden.
+- Der Nullbetragsfilter prüft den gespeicherten Bruttobetrag auf exakt null, vor der Ausgabe mit zwei Dezimalstellen.
+- Das Exportformat verwendet Euro. Es findet keine Währungsumrechnung statt; der Export ist für EUR-Rechnungen vorgesehen.
+- Der Statusfilter prüft den aktuellen Bestellstatus, nicht den Status am Rechnungsdatum.
 
-```
-Präfix + zweistelliges Jahr + laufende Nummer
-```
+## Entwicklung und Releases
 
-Generisches Beispiel mit dem frei gewählten Präfix `RE`, dem Rechnungsjahr 2025 und einer sechsstelligen laufenden Nummer:
+Die Moduldateien liegen direkt im Hauptverzeichnis des Repositories.
 
-```
-RE + 25 + 000007 = RE25000007
+```sh
+php tests/run.php
+python3 scripts/build-release.py
 ```
 
-Das Jahr wird aus dem Rechnungsdatum der Rechnung übernommen.
+Der Build erzeugt `dist/wisoexport-v1.1.0.zip` und eine SHA-256-Datei. Tests, Git-Daten und GitHub-Workflows werden nicht ins Modulpaket aufgenommen.
 
-Dadurch bleiben historische Rechnungsnummern auch nach einem Jahreswechsel korrekt.
+Die Action **Test and release module** prüft Pull Requests und Pushes. Auf `main` veröffentlicht sie nach erfolgreichen Tests eine noch nicht vorhandene Modulversion als GitHub Release samt ZIP und Versions-Tag. Weitere Pushes derselben Version ersetzen das Release nicht. Auch Versions-Tags (`v1.1.0`) und ein manueller Start auf `main` werden unterstützt. Bei Tags muss die Tag-Version mit Modul und `config.xml` übereinstimmen.
 
----
-
-## Steuerarten
-
-Die Einstellung **Umsatzsteuerart** bestimmt den Wert in der TSV-Datei:
-
-| Einstellung                           | TSV-Wert |
-| ------------------------------------- | -------- |
-| Keine Umsatzsteuer (Kleinunternehmer) | NULL     |
-| Brutto                                | Brutto   |
-| Netto                                 | Netto    |
-
----
+Für eine neue Veröffentlichung Versionsnummer in `wisoexport.php` und `config.xml` erhöhen sowie Changelog und `.github/release-notes.md` aktualisieren. Ein bestehendes Release bleibt unverändert.
 
 ## Lizenz
 
-[GPL-3.0-or-later](LICENSE).
+[GNU GPL-3.0-or-later](LICENSE).

@@ -9,7 +9,8 @@ class Wisoexport extends Module
     public function __construct()
     {
         $this->name = 'wisoexport';
-        $this->version = '1.0.2';
+        $this->version = '1.1.0';
+        $this->ps_versions_compliancy = ['min' => '9.1.0', 'max' => '9.1.99'];
         $this->author = 'Community';
         $this->tab = 'administration';
         $this->need_instance = 0;
@@ -24,14 +25,12 @@ class Wisoexport extends Module
         );
     }
 
-
     public function install()
     {
         return parent::install()
             && $this->installConfiguration()
             && $this->installTab();
     }
-
 
     public function uninstall()
     {
@@ -40,19 +39,8 @@ class Wisoexport extends Module
             && parent::uninstall();
     }
 
-
-
     private function installConfiguration()
     {
-        Configuration::updateValue(
-            'WISOEXPORT_PREFIX',
-            ''
-        );
-
-        Configuration::updateValue(
-            'WISOEXPORT_NUMBER_LENGTH',
-            6
-        );
 
         Configuration::updateValue(
             'WISOEXPORT_DESCRIPTION',
@@ -79,7 +67,6 @@ class Wisoexport extends Module
             1
         );
 
-
         $shippingState = (int)Db::getInstance()->getValue(
             '
             SELECT id_order_state
@@ -88,18 +75,13 @@ class Wisoexport extends Module
             AND id_lang = ' . (int)$this->context->language->id
         );
 
-
         Configuration::updateValue(
             'WISOEXPORT_ORDER_STATE',
             $shippingState
         );
 
-
-        return true;
+        return Configuration::updateValue('WISOEXPORT_EXCLUDE_ZERO', 0);
     }
-
-
-
 
     private function uninstallConfiguration()
     {
@@ -111,12 +93,10 @@ class Wisoexport extends Module
         Configuration::deleteByName('WISOEXPORT_ORDER_STATE');
         Configuration::deleteByName('WISOEXPORT_TAX_TYPE');
         Configuration::deleteByName('WISOEXPORT_USE_STATUS_FILTER');
+        Configuration::deleteByName('WISOEXPORT_EXCLUDE_ZERO');
 
         return true;
     }
-
-
-
 
     private function installTab()
     {
@@ -131,7 +111,6 @@ class Wisoexport extends Module
                 'AdminParentOrders'
             );
 
-
         foreach (Language::getLanguages(true) as $lang) {
 
             $tab->name[$lang['id_lang']] =
@@ -139,19 +118,14 @@ class Wisoexport extends Module
 
         }
 
-
         return $tab->add();
     }
-
-
-
 
     private function uninstallTab()
     {
         $id = (int)Tab::getIdFromClassName(
             'AdminWisoExport'
         );
-
 
         if ($id) {
 
@@ -161,7 +135,6 @@ class Wisoexport extends Module
 
         }
 
-
         return true;
     }
     public function getContent()
@@ -170,39 +143,26 @@ class Wisoexport extends Module
 
         $output = '';
 
-
         if (Tools::isSubmit('submitWisoExportConfig')) {
-
-
-            Configuration::updateValue(
-                'WISOEXPORT_PREFIX',
-                Tools::getValue('WISOEXPORT_PREFIX')
-            );
-
-
-            Configuration::updateValue(
-                'WISOEXPORT_NUMBER_LENGTH',
-                (int)Tools::getValue('WISOEXPORT_NUMBER_LENGTH')
-            );
-
+            if (!in_array(Tools::getValue('WISOEXPORT_TAX_TYPE'), ['NULL', 'Brutto', 'Netto'], true)) {
+                return $this->displayError($this->l('Ungültige Umsatzsteuerart.')) . $this->renderConfigurationForm();
+            }
+            Configuration::updateValue('WISOEXPORT_EXCLUDE_ZERO', (int) (bool) Tools::getValue('WISOEXPORT_EXCLUDE_ZERO'));
 
             Configuration::updateValue(
                 'WISOEXPORT_DESCRIPTION',
                 Tools::getValue('WISOEXPORT_DESCRIPTION')
             );
 
-
             Configuration::updateValue(
                 'WISOEXPORT_ACCOUNT',
                 Tools::getValue('WISOEXPORT_ACCOUNT')
             );
 
-
             Configuration::updateValue(
                 'WISOEXPORT_BANK',
                 Tools::getValue('WISOEXPORT_BANK')
             );
-
 
             Configuration::updateValue(
                 'WISOEXPORT_ORDER_STATE',
@@ -210,7 +170,6 @@ class Wisoexport extends Module
                     'WISOEXPORT_ORDER_STATE'
                 )
             );
-
 
             Configuration::updateValue(
                 'WISOEXPORT_TAX_TYPE',
@@ -226,44 +185,21 @@ class Wisoexport extends Module
                 )
             );
 
-
             $output .= $this->displayConfirmation(
                 $this->l('Einstellungen gespeichert.')
             );
 
         }
 
-
         return $output . $this->renderConfigurationForm();
 
     }
 
-
-
-
-
     private function initializeConfiguration()
     {
-
-        if (Configuration::get('WISOEXPORT_PREFIX') === false) {
-
-            Configuration::updateValue(
-                'WISOEXPORT_PREFIX',
-                ''
-            );
-
+        if (Configuration::get('WISOEXPORT_EXCLUDE_ZERO') === false) {
+            Configuration::updateValue('WISOEXPORT_EXCLUDE_ZERO', 0);
         }
-
-
-        if (Configuration::get('WISOEXPORT_NUMBER_LENGTH') === false) {
-
-            Configuration::updateValue(
-                'WISOEXPORT_NUMBER_LENGTH',
-                6
-            );
-
-        }
-
 
         if (Configuration::get('WISOEXPORT_DESCRIPTION') === false) {
 
@@ -274,7 +210,6 @@ class Wisoexport extends Module
 
         }
 
-
         if (Configuration::get('WISOEXPORT_ACCOUNT') === false) {
 
             Configuration::updateValue(
@@ -284,7 +219,6 @@ class Wisoexport extends Module
 
         }
 
-
         if (Configuration::get('WISOEXPORT_BANK') === false) {
 
             Configuration::updateValue(
@@ -293,7 +227,6 @@ class Wisoexport extends Module
             );
 
         }
-
 
         if (Configuration::get('WISOEXPORT_TAX_TYPE') === false) {
 
@@ -323,7 +256,6 @@ class Wisoexport extends Module
                 AND id_lang = ' . (int)$this->context->language->id
             );
 
-
             Configuration::updateValue(
                 'WISOEXPORT_ORDER_STATE',
                 $shippingState
@@ -332,10 +264,6 @@ class Wisoexport extends Module
         }
 
     }
-
-
-
-
 
     private function renderConfigurationForm()
     {
@@ -354,26 +282,18 @@ class Wisoexport extends Module
 
                 ],
 
-
                 'input' => [
-
                     [
-                        'type' => 'text',
-                        'label' => $this->l(
-                            'Basis-Präfix (ohne Jahr)'
-                        ),
-                        'name' => 'WISOEXPORT_PREFIX',
+                        'type' => 'switch',
+                        'label' => $this->l('Rechnungen mit Betrag 0 ausschließen'),
+                        'name' => 'WISOEXPORT_EXCLUDE_ZERO',
+                        'desc' => $this->l('Negative Rechnungsbeträge bleiben enthalten. Der Filter prüft den Bruttorechnungsbetrag.'),
+                        'is_bool' => true,
+                        'values' => [
+                            ['id' => 'exclude_zero_on', 'value' => 1, 'label' => $this->l('Ja')],
+                            ['id' => 'exclude_zero_off', 'value' => 0, 'label' => $this->l('Nein')],
+                        ],
                     ],
-
-
-                    [
-                        'type' => 'text',
-                        'label' => $this->l(
-                            'Stellen der Rechnungsnummer'
-                        ),
-                        'name' => 'WISOEXPORT_NUMBER_LENGTH',
-                    ],
-
 
                     [
                         'type' => 'text',
@@ -383,7 +303,6 @@ class Wisoexport extends Module
                         'name' => 'WISOEXPORT_DESCRIPTION',
                     ],
 
-
                     [
                         'type' => 'text',
                         'label' => $this->l(
@@ -392,7 +311,6 @@ class Wisoexport extends Module
                         'name' => 'WISOEXPORT_ACCOUNT',
                     ],
 
-
                     [
                         'type' => 'text',
                         'label' => $this->l(
@@ -400,7 +318,6 @@ class Wisoexport extends Module
                         ),
                         'name' => 'WISOEXPORT_BANK',
                     ],
-
 
                     [
                         'type' => 'select',
@@ -421,7 +338,6 @@ class Wisoexport extends Module
 
                         ],
                     ],
-
 
                     [
                         'type' => 'select',
@@ -486,7 +402,6 @@ class Wisoexport extends Module
 
                 ],
 
-
                 'submit' => [
 
                     'title' => $this->l(
@@ -499,70 +414,47 @@ class Wisoexport extends Module
 
         ];
 
-
-
         $helper = new HelperForm();
-
 
         $helper->module = $this;
 
         $helper->name_controller = $this->name;
-
 
         $helper->token =
             Tools::getAdminTokenLite(
                 'AdminModules'
             );
 
-
         $helper->currentIndex =
             AdminController::$currentIndex
             . '&configure='
             . $this->name;
 
-
         $helper->submit_action =
             'submitWisoExportConfig';
 
-
-
         $helper->fields_value = [
-
-            'WISOEXPORT_PREFIX' =>
-                Configuration::get(
-                    'WISOEXPORT_PREFIX'
-                ),
-
-
-            'WISOEXPORT_NUMBER_LENGTH' =>
-                Configuration::get(
-                    'WISOEXPORT_NUMBER_LENGTH'
-                ),
-
+            'WISOEXPORT_EXCLUDE_ZERO' => (int) Configuration::get('WISOEXPORT_EXCLUDE_ZERO'),
 
             'WISOEXPORT_DESCRIPTION' =>
                 Configuration::get(
                     'WISOEXPORT_DESCRIPTION'
                 ),
 
-
             'WISOEXPORT_ACCOUNT' =>
                 Configuration::get(
                     'WISOEXPORT_ACCOUNT'
                 ),
-
 
             'WISOEXPORT_BANK' =>
                 Configuration::get(
                     'WISOEXPORT_BANK'
                 ),
 
-
             'WISOEXPORT_ORDER_STATE' =>
                 Configuration::get(
                     'WISOEXPORT_ORDER_STATE'
                 ),
-
 
             'WISOEXPORT_TAX_TYPE' =>
                 Configuration::get(
@@ -575,8 +467,6 @@ class Wisoexport extends Module
                 ),
 
         ];
-
-
 
         return $helper->generateForm(
             [$fieldsForm]

@@ -41,7 +41,7 @@
 
         <div class="alert alert-info">
 
-            {l s='Es werden nur Rechnungen mit dem Status Versand exportiert.' mod='wisoexport'}
+            {l s='Es gelten die Filter aus den Moduleinstellungen. Negative Rechnungsbeträge bleiben beim Ausschluss von Nullbeträgen enthalten.' mod='wisoexport'}
 
         </div>
 

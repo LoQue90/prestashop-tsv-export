@@ -4,50 +4,17 @@ namespace WisoExport\Formatter;
 
 class InvoiceNumberFormatter
 {
-
-    private string $prefix;
-
-    private int $length;
-
-
-
-    public function __construct(
-        string $prefix,
-        int $length
-    ) {
-
-        $this->prefix = $prefix;
-
-        $this->length = $length;
-
-    }
-
-
-
     public function format(array $invoice): string
     {
+        $orderInvoice = new \OrderInvoice((int) $invoice['id_order_invoice']);
+        if (!\Validate::isLoadedObject($orderInvoice)) {
+            throw new \RuntimeException('Rechnung konnte nicht geladen werden.');
+        }
 
-        $year = date(
-            'y',
-            strtotime(
-                $invoice['date_add']
-            )
+        // Uses the same core method and formatter hooks as the invoice PDF.
+        return $orderInvoice->getInvoiceNumberFormatted(
+            (int) $invoice['id_lang'],
+            (int) $invoice['id_shop']
         );
-
-
-        $number = str_pad(
-            (string)$invoice['number'],
-            $this->length,
-            '0',
-            STR_PAD_LEFT
-        );
-
-
-        return
-            $this->prefix
-            . $year
-            . $number;
-
     }
-
 }
