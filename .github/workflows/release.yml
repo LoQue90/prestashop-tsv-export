@@ -30,6 +30,13 @@ jobs:
         run: |
           find . -name '*.php' -not -path './.git/*' -print0 | xargs -0 -n1 php -l
           php tests/run.php
+      - name: Render export page
+        env:
+          SMARTY_AUTOLOAD: ${{ runner.temp }}/wiso-smarty/vendor/autoload.php
+        run: |
+          mkdir -p "$RUNNER_TEMP/wiso-smarty"
+          composer require --working-dir="$RUNNER_TEMP/wiso-smarty" 'smarty/smarty:^4.5' --no-interaction --no-progress
+          php tests/template.php
       - name: Verify installable package
         run: python3 scripts/build-release.py
 

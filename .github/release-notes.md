@@ -1,12 +1,18 @@
-## Installation / Update
+## WISO EÜR Export 1.2.0
 
-**Deutsch:** `wisoexport-v1.1.1.zip` unter Assets herunterladen und über **Module → Modulmanager → Modul hochladen** installieren. Bei einem Update nicht vorher deinstallieren, damit Einstellungen erhalten bleiben.
+- Einstellungen und Export auf einer Seite; Filter und Buchungsdaten werden gespeichert.
+- Kompakte Datumsfelder oder inklusiver Export ab einer ausgewählten Rechnung.
+- Durchsuchbare Rechnungsliste mit Nummer und Datum.
+- Letzter Export: Zeitpunkt, Zeitraum/Startrechnung, Anzahl und letzte Rechnungsnummer.
+- Kleinunternehmer: sieben TSV-Spalten, Sachkonto direkt nach dem Betrag. Brutto/Netto: acht Spalten.
 
-**English:** Download `wisoexport-v1.1.1.zip` from Assets and install it via **Modules → Module Manager → Upload a module**. Update without uninstalling to preserve settings.
+**Update:** `wisoexport-v1.2.0.zip` unter Assets herunterladen und im Modulmanager hochladen. Nicht vorher deinstallieren. Die Kleinunternehmer-Spaltenzuordnung in Buchungsimport auf sieben Spalten anpassen.
 
-## Änderungen / Changes
+## English
 
-- Die Exportseite zeigt den ausgewählten Bestellstatus, die Behandlung von Nullbeträgen und die Berücksichtigung negativer Rechnungsbeträge.
-- Deutsche und englische Anleitung auf Installation, Einstellungen und Export vereinfacht.
-- The export page displays the selected order status and how zero and negative amounts are handled.
-- Simplified German and English guides for installation, settings and exporting.
+- Settings and exporting on one page, with saved filters and booking details.
+- Compact date fields or inclusive export starting from a searchable invoice selection.
+- Last export record with creation time, selected range, invoice count and final invoice number.
+- Small-business exports use seven columns; gross/net exports retain eight.
+
+Download `wisoexport-v1.2.0.zip` from Assets and update without uninstalling. Adjust the small-business import column mapping to seven columns.

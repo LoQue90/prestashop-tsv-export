@@ -1,5 +1,16 @@
 # Changelog
 
+## 1.2.0
+
+- Inklusiver Export ab auswählbarer Rechnung mit durchsuchbarer Liste.
+- Kompakte Datumsfelder (180 px).
+- Kleinunternehmer: sieben Spalten ohne Umsatzsteuerart-Feld; Brutto/Netto weiterhin acht.
+
+- Zeitraum, Filter und Buchungsdaten auf einer gemeinsamen Exportseite.
+- Einstellungen werden beim Exportieren gespeichert; Konfigurieren öffnet die Exportseite.
+- Letzter Export mit Zeitpunkt, Zeitraum, Anzahl und tatsächlicher letzter Rechnungsnummer.
+- Keine Überschreibung des letzten Exports bei Fehlern oder leeren Ergebnissen.
+
 ## 1.1.1
 
 - Exportseite zeigt den ausgewählten Bestellstatus, Nullbetragsfilter und die Berücksichtigung negativer Rechnungsbeträge an.
