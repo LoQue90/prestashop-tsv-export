@@ -1,18 +1,15 @@
-## WISO EÜR Export 1.2.0
+## Änderungen
 
-- Einstellungen und Export auf einer Seite; Filter und Buchungsdaten werden gespeichert.
-- Kompakte Datumsfelder oder inklusiver Export ab einer ausgewählten Rechnung.
-- Durchsuchbare Rechnungsliste mit Nummer und Datum.
-- Letzter Export: Zeitpunkt, Zeitraum/Startrechnung, Anzahl und letzte Rechnungsnummer.
-- Kleinunternehmer: sieben TSV-Spalten, Sachkonto direkt nach dem Betrag. Brutto/Netto: acht Spalten.
+- Bis Datum ist mit heute vorbelegt; Von Datum bleibt leer.
+- Manuell gewählte Datumswerte bleiben bei Validierungsfehlern erhalten.
+- Bestätigter Stand 1.2.1: Kleinunternehmer exportiert sieben Spalten ohne NULL oder Ersatzfeld; sonst acht Spalten mit BRUTTO/NETTO.
+- Kompakte Datumsfelder und Anzeige des letzten Exports mit Rechnungsnummer.
+- Einstellungen und Export auf einer Seite, mit getrennten Schaltflächen zum Speichern und Exportieren.
 
-**Update:** `wisoexport-v1.2.0.zip` unter Assets herunterladen und im Modulmanager hochladen. Nicht vorher deinstallieren. Die Kleinunternehmer-Spaltenzuordnung in Buchungsimport auf sieben Spalten anpassen.
+## Installation
 
-## English
+Die Datei wisoexport-v1.2.2.zip im PrestaShop-Modulmanager hochladen. Bestehendes Modul nicht vorher deinstallieren. Gespeicherte Einstellungen bleiben erhalten. Beschreibung und Konten sind bei Neuinstallation leer.
 
-- Settings and exporting on one page, with saved filters and booking details.
-- Compact date fields or inclusive export starting from a searchable invoice selection.
-- Last export record with creation time, selected range, invoice count and final invoice number.
-- Small-business exports use seven columns; gross/net exports retain eight.
+## Prüfung
 
-Download `wisoexport-v1.2.0.zip` from Assets and update without uninstalling. Adjust the small-business import column mapping to seven columns.
+PHP-Syntax, Exportregressionen und Template-Prüfung. Lokal zusätzlich isolierte HTTP-Tests für Download, Exportanzeige, Fehlerfälle und wiederholtes Neuladen. Kein vollständiger Upgrade-Test auf einer produktionsgleichen Shopinstallation.

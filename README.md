@@ -2,81 +2,85 @@
 
 [English](README.en.md) · [Download](https://github.com/LoQue90/prestashop-tsv-export/releases/latest)
 
-Exportiere Rechnungen aus **PrestaShop 9.1.x** als TSV-Datei für **WISO EÜR & Kasse** über [Buchungsimport](https://www.buchungsimport.de/).
+Exportiere deine Rechnungen aus PrestaShop als TSV-Datei für den Import in **WISO EÜR & Kasse** über [Buchungsimport](https://www.buchungsimport.de/).
+
+Für **PrestaShop 9.1.x**, einschließlich 9.1.5.
+
+## Funktionen
+
+- Rechnungen nach Zeitraum exportieren.
+- Optional nach aktuellem Bestellstatus filtern.
+- Rechnungen mit Betrag 0 auf Wunsch ausschließen; negative Beträge bleiben enthalten.
+- Rechnungsnummern entsprechend der Einstellungen deines Shops übernehmen.
+- Bezeichnung, Sachkonto, Geldkonto und Umsatzsteuerart festlegen.
 
 ## Installation und Update
 
-1. Unter [Releases](https://github.com/LoQue90/prestashop-tsv-export/releases/latest) das Asset **wisoexport-v1.2.0.zip** herunterladen, nicht „Source code“.
-2. In PrestaShop **Module → Modulmanager → Modul hochladen** öffnen und die ZIP hochladen.
-3. Zum Aktualisieren nicht vorher deinstallieren, damit deine Einstellungen erhalten bleiben.
+1. Die bereitgestellte Test-ZIP **`wisoexport-v1.2.2.zip`** verwenden.
+2. In PrestaShop **Module → Modulmanager → Modul hochladen** öffnen.
+3. Die ZIP hochladen und das Modul installieren oder aktualisieren.
+4. Über **Konfigurieren** die Einstellungen öffnen.
 
-## Exportieren
-
-Unter **Bestellungen → WISO EÜR Export** findest du alle Einstellungen und den Export. **Konfigurieren** im Modulmanager öffnet dieselbe Seite.
-
-Wähle einen Exportbereich:
-
-- **Zeitraum:** Von- und Bis-Datum auswählen. Beide Tage sind vollständig eingeschlossen; maßgeblich ist das Rechnungsdatum.
-- **Ab Rechnung (einschließlich):** Nach Rechnungsnummer oder Datum suchen und eine Startrechnung auswählen. Diese und alle danach erstellten Rechnungen werden berücksichtigt, ohne zusätzliche Datumsgrenze. Die Reihenfolge richtet sich nach Rechnungsdatum und bei gleichem Zeitpunkt nach der internen Reihenfolge. Das funktioniert auch über Jahreswechsel mit zurückgesetzten Nummern hinweg.
-
-Prüfe die Filter und Buchungsdaten und klicke auf **TSV exportieren**. Filter und Buchungsdaten werden für den nächsten Export gespeichert. Die heruntergeladene Datei kannst du über Buchungsimport in WISO importieren.
+Bei einem Update das Modul nicht vorher deinstallieren, damit deine Einstellungen erhalten bleiben.
 
 ## Einstellungen
 
 | Einstellung | Beschreibung |
 | --- | --- |
-| Bestellstatus verwenden | Aktiviert die Auswahl nach aktuellem Bestellstatus. Ohne Filter werden alle Status berücksichtigt. |
-| Bestellstatus für Export | Gewünschter Status, zum Beispiel „Versand“. |
-| Rechnungen mit Betrag 0 ausschließen | Entfernt exakt 0 € Bruttobetrag; negative Beträge bleiben enthalten. Standard: aus. |
-| Bezeichnung | Buchungstext, zum Beispiel „Warenverkauf“. |
-| Sachkonto | Einnahmekonto. |
+| Bezeichnung | Buchungstext für WISO, zum Beispiel „Warenverkauf“. |
+| Sachkonto | Einnahmekonto für die Buchung. |
 | Geldkonto | Bank- oder Verrechnungskonto. |
 | Umsatzsteuerart | Kleinunternehmer, Brutto oder Netto. Standard: Kleinunternehmer. |
+| Bestellstatus verwenden | Schaltet den Filter nach dem aktuellen Bestellstatus ein oder aus. |
+| Bestellstatus für Export | Gewünschter Status bei aktiviertem Filter, zum Beispiel „Versand“. |
+| Rechnungen mit Betrag 0 ausschließen | Schließt Rechnungen mit exakt 0 € Bruttobetrag aus. Positive und negative Beträge bleiben enthalten. Standard: aus. |
 
-Die Filter gelten für beide Exportarten. Auch die ausgewählte Startrechnung kann durch einen Filter ausgeschlossen werden. Ohne Treffer erscheint eine Meldung.
+Bei **Netto** wird der Nettorechnungsbetrag exportiert, bei **Brutto** und **Kleinunternehmer** der Bruttorechnungsbetrag. Wähle die Konten passend zu deiner Buchhaltung.
 
-## Letzter Export
+Die Exportseite zeigt den gewählten Bestellstatus sowie die Behandlung von Nullbeträgen und negativen Rechnungsbeträgen an.
 
-Die Exportseite zeigt Datum und Uhrzeit, Zeitraum oder Startrechnung, Anzahl der Rechnungen und die Rechnungsnummer aus der letzten Zeile der Datei.
+## Rechnungen exportieren
 
-Nach dem Download **Anzeige aktualisieren** anklicken. Fehler und leere Ergebnisse überschreiben den letzten Export nicht. Die Anzeige dokumentiert die Erstellung der Datei, nicht den Import in WISO. Exporte vor Version 1.2.0 werden nicht nachträglich erfasst.
+1. **Bestellungen → WISO EÜR Export** öffnen.
+2. Geänderte Einstellungen zunächst mit **Speichern** übernehmen. Von- und Bis-Datum auswählen. Beide Tage sind eingeschlossen.
+3. **TSV Export erstellen** anklicken.
+4. Die heruntergeladene Datei mit Buchungsimport für WISO importieren.
+
+Der Zeitraum bezieht sich auf das **Rechnungsdatum**. Wenn keine Rechnungen zu den gewählten Filtern passen, erscheint eine entsprechende Meldung.
+
+Beispiel-Dateiname: `WISO_EUR_2025-01-01_bis_2025-12-31.tsv`.
 
 ## Exportformat
 
-Tabulatorgetrennt, ohne Kopfzeile, UTF-8 ohne BOM.
+Für Kleinunternehmer enthält die TSV-Datei sieben Spalten: Buchungsart, Datum, Rechnungsnummer, Bezeichnung, Betrag, Sachkonto und Geldkonto. Es gibt keine Steuer-Spalte und kein leeres Ersatzfeld. Bei Brutto oder Netto enthält sie acht Spalten wie unten aufgeführt, ohne Kopfzeile. Sie ist als UTF-8 ohne BOM gespeichert.
 
-| Position | Kleinunternehmer | Brutto / Netto |
-| --- | --- | --- |
-| 1 | Einnahme | Einnahme |
-| 2 | Rechnungsdatum | Rechnungsdatum |
-| 3 | Rechnungsnummer | Rechnungsnummer |
-| 4 | Bezeichnung | Bezeichnung |
-| 5 | Bruttobetrag | Brutto- bzw. Nettobetrag |
-| 6 | Sachkonto | Brutto bzw. Netto |
-| 7 | Geldkonto | Sachkonto |
-| 8 | — | Geldkonto |
+| Spalte | Inhalt |
+| --- | --- |
+| 1 | Buchungsart: `Einnahme` |
+| 2 | Rechnungsdatum |
+| 3 | Rechnungsnummer |
+| 4 | Bezeichnung |
+| 5 | Betrag in Euro |
+| 6 | Umsatzsteuerart: `BRUTTO` oder `NETTO` |
+| 7 | Sachkonto |
+| 8 | Geldkonto |
 
-**Kleinunternehmer:** sieben Spalten. Nach dem Betrag folgt direkt das Sachkonto, ohne zusätzliche oder leere Spalte.
+Beispiel mit einer generischen Rechnungsnummer:
 
 ```text
 Einnahme	10.02.2025	RE000007	Warenverkauf	10,99 €	8195	1200
 ```
 
-**Brutto / Netto:** acht Spalten. Die Auswahl bestimmt auch den exportierten Betrag.
+## Letzter Export
 
-```text
-Einnahme	10.02.2025	RE000007	Warenverkauf	119,00 €	Brutto	8195	1200
-Einnahme	10.02.2025	RE000007	Warenverkauf	100,00 €	Netto	8195	1200
-```
-
-Beim Update auf 1.2.0 die Spaltenzuordnung für Kleinunternehmer in Buchungsimport auf das neue siebenspaltige Format einstellen.
+Nach dem Download die Seite neu laden: Angezeigt werden Datum/Uhrzeit der Dateierstellung (Shop-Zeitzone) und die Rechnungsnummer aus der letzten exportierten Zeile. Fehler und leere Ergebnisse überschreiben den bisherigen Stand nicht. Ein WISO-Import wird damit nicht bestätigt.
 
 ## Hinweise
 
-- Für EUR-Rechnungen vorgesehen; keine Währungsumrechnung.
-- Separate Gutschriften und Rückerstattungsbelege sind nicht enthalten. Negative Rechnungsbeträge werden als negative Einnahmen ausgegeben.
-- Rechnungsnummern entsprechen den aktuellen Shop-Einstellungen. Spätere Formatänderungen können ältere Rechnungen beeinflussen.
-- Wiederholte Exporte können dieselben Rechnungen enthalten. Der letzte Export dient zur Orientierung; es gibt keinen automatischen Ausschluss bereits exportierter Rechnungen.
+- Der Export ist für Rechnungen in **Euro** vorgesehen. Eine Währungsumrechnung erfolgt nicht.
+- Separate Gutschriften und Rückerstattungsbelege sind nicht enthalten. Negative Rechnungsbeträge werden als negative Einnahmen exportiert.
+- Der Statusfilter berücksichtigt den **aktuellen** Bestellstatus.
+- Das Rechnungsnummernformat richtet sich nach den aktuellen Shop-Einstellungen. Spätere Formatänderungen können auch die Darstellung älterer Rechnungen im Export beeinflussen.
 
 ## Lizenz
 

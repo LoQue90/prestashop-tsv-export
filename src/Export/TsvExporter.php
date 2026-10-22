@@ -13,9 +13,8 @@ class TsvExporter
     private string $taxType;
     private string $dateFrom;
     private string $dateTo;
-    private array $range;
 
-    public function __construct(InvoiceNumberFormatter $formatter, string $description, string $account, string $bank, string $taxType, string $dateFrom, string $dateTo, array $range = [])
+    public function __construct(InvoiceNumberFormatter $formatter, string $description, string $account, string $bank, string $taxType, string $dateFrom, string $dateTo)
     {
         if (!in_array($taxType, ['NULL', 'Brutto', 'Netto'], true)) {
             throw new \InvalidArgumentException('Ungültige Umsatzsteuerart.');
@@ -27,7 +26,6 @@ class TsvExporter
         $this->taxType = $taxType;
         $this->dateFrom = $dateFrom;
         $this->dateTo = $dateTo;
-        $this->range = $range;
     }
 
     public function formatRow(array $invoice): string
@@ -40,9 +38,8 @@ class TsvExporter
             $this->description,
             number_format((float) $amount, 2, ',', '') . ' €',
         ];
-        // Preserve the old saved setting while omitting its column entirely.
         if ($this->taxType !== 'NULL') {
-            $fields[] = $this->taxType;
+            $fields[] = strtoupper($this->taxType);
         }
         $fields[] = $this->account;
         $fields[] = $this->bank;
@@ -51,40 +48,23 @@ class TsvExporter
         }, $fields)) . "\r\n";
     }
 
-    /**
-     * Write the complete TSV before recording its summary or sending a download.
-     * The last number comes from the actual final row, not a numeric maximum.
-     */
-    public function writeToStream($handle, array $invoices): array
+    public function output(array $invoices, ?callable $onPrepared = null): void
     {
         if (!$invoices) {
             throw new \InvalidArgumentException('Keine Rechnungen zum Exportieren.');
         }
-        $lastNumber = '';
-        foreach ($invoices as $invoice) {
-            $row = $this->formatRow($invoice);
-            if (fwrite($handle, $row) !== strlen($row)) {
-                throw new \RuntimeException('Exportdatei konnte nicht geschrieben werden.');
-            }
-            $lastNumber = explode("\t", $row)[2];
-        }
-        return array_merge($this->range, [
-            'date_from' => $this->dateFrom,
-            'date_to' => $this->dateTo,
-            'last_invoice_number' => $lastNumber,
-            'count' => count($invoices),
-        ]);
-    }
-
-    public function output(array $invoices, ?callable $onPrepared = null): void
-    {
         // Prepare the complete file before sending headers, so errors cannot produce a partial download.
         $handle = fopen('php://temp', 'w+b');
         if ($handle === false) {
             throw new \RuntimeException('Exportdatei konnte nicht geöffnet werden.');
         }
         try {
-            $summary = $this->writeToStream($handle, $invoices);
+            foreach ($invoices as $invoice) {
+                $row = $this->formatRow($invoice);
+                if (fwrite($handle, $row) !== strlen($row)) {
+                    throw new \RuntimeException('Exportdatei konnte nicht geschrieben werden.');
+                }
+            }
             rewind($handle);
             while (ob_get_level() > 0) {
                 if (!ob_end_clean()) {
@@ -95,14 +75,11 @@ class TsvExporter
                 throw new \RuntimeException('HTTP-Header wurden bereits gesendet.');
             }
             if ($onPrepared !== null) {
-                $onPrepared($summary);
+                // Read the number from the actual final TSV row, not a second formatter call.
+                $onPrepared(explode("\t", $row)[2]);
             }
             header('Content-Type: text/tab-separated-values; charset=UTF-8');
-            $filename = $this->dateFrom . '_bis_' . $this->dateTo;
-            if (($this->range['mode'] ?? 'dates') === 'invoice') {
-                $filename = 'ab_Rechnung_' . substr(preg_replace('/[^a-zA-Z0-9_-]/', '_', $this->range['start_invoice_number']), 0, 80);
-            }
-            header('Content-Disposition: attachment; filename="WISO_EUR_' . $filename . '.tsv"');
+            header('Content-Disposition: attachment; filename="WISO_EUR_' . $this->dateFrom . '_bis_' . $this->dateTo . '.tsv"');
             header('Cache-Control: no-store');
             fpassthru($handle);
         } finally {

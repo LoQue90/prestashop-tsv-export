@@ -1,35 +1,20 @@
 <?php
 require getenv('SMARTY_AUTOLOAD');
 $smarty = new Smarty();
-$smarty->setCompileDir(sys_get_temp_dir() . '/wiso-smarty-compiled');
-$smarty->registerPlugin('function', 'l', static function ($params) { return htmlspecialchars($params['s'], ENT_QUOTES, 'UTF-8'); });
-$smarty->registerPlugin('modifier', 'intval', 'intval');
+$smarty->setCompileDir(sys_get_temp_dir());
+$smarty->registerPlugin('function', 'l', static function ($p) { return $p['s']; });
 $smarty->assign([
-    'wiso_url'=>'index.php?controller=AdminWisoExport&token=abc', 'wiso_token'=>'abc',
-    'wiso_settings'=>['WISOEXPORT_USE_STATUS_FILTER'=>1,'WISOEXPORT_ORDER_STATE'=>4,'WISOEXPORT_EXCLUDE_ZERO'=>1,
-        'WISOEXPORT_DESCRIPTION'=>'Sales " <test>', 'WISOEXPORT_ACCOUNT'=>'8195','WISOEXPORT_BANK'=>'1200','WISOEXPORT_TAX_TYPE'=>'NULL'],
-    'wiso_states'=>[['id_order_state'=>4,'name'=>'Versand']], 'wiso_start_id'=>7,
-    'wiso_choices'=>[['id'=>7,'label'=>'RE000007 · 14.10.2026']],
-    'wiso_date_from'=>'2026-10-01','wiso_date_to'=>'2026-10-14',
+    'wiso_configuration_content' => '', 'wiso_last_export' => null,
+    'wiso_use_status_filter' => false, 'wiso_status_name' => '', 'wiso_exclude_zero' => false,
+    'wiso_date_from' => '', 'wiso_date_to' => '2026-10-22',
 ]);
-$template = __DIR__.'/../views/templates/admin/wisoexport/export.tpl';
-foreach (['dates','invoice'] as $mode) {
-    $smarty->assign('wiso_mode', $mode);
-    $smarty->assign('wiso_last', ['mode'=>$mode,'start_invoice_number'=>'RE000007','created_display'=>'14.10.2026 23:00:00',
-        'from_display'=>'01.10.2026','to_display'=>'14.10.2026','last_invoice_number'=>'RE000042','count'=>18]);
-    $html = $smarty->fetch($template);
-    if (str_contains($html, 'Sales " <test>') || !str_contains($html, 'RE000042') || !str_contains($html, 'Kleinunternehmer')) {
-        throw new RuntimeException('Template rendering/escaping failed');
-    }
-    $doc = new DOMDocument();
-    @$doc->loadHTML($html);
-    $xpath = new DOMXPath($doc);
-    $date = $xpath->query('//*[@id="wiso-from"]')->item(0);
-    $invoice = $xpath->query('//*[@id="wiso-start-invoice"]')->item(0);
-    if ($date->hasAttribute('disabled') !== ($mode === 'invoice') || $invoice->hasAttribute('disabled') !== ($mode === 'dates')) {
-        throw new RuntimeException('Inactive range must be disabled');
-    }
+$template = __DIR__ . '/../views/templates/admin/wisoexport/export.tpl';
+$html = $smarty->fetch($template);
+if (!preg_match('/name="date_from"\s+value=""/', $html) || !preg_match('/name="date_to"\s+value="2026-10-22"/', $html)) {
+    throw new RuntimeException('Date values not rendered');
 }
-$smarty->assign('wiso_last', null);
-if (!str_contains($smarty->fetch($template), 'Noch kein Export erfasst.')) { throw new RuntimeException('Empty history missing'); }
+$smarty->assign('wiso_date_to', '"><script>alert(1)</script>');
+if (str_contains($smarty->fetch($template), '<script>')) {
+    throw new RuntimeException('Date value not escaped');
+}
 echo "Template rendering tests passed.\n";

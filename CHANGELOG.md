@@ -1,15 +1,18 @@
+# 1.2.2
+
+- Bis Datum ist beim Öffnen mit dem aktuellen Datum der Shop-Zeitzone vorbelegt.
+- Gewählte Datumswerte bleiben bei Validierungsfehlern erhalten.
+- Enthält den bestätigten Teststand 1.2.1 mit sieben Spalten für Kleinunternehmer.
+- Beschreibung, Sachkonto und Geldkonto bleiben bei Neuinstallation leer; Updates erhalten gespeicherte Einstellungen.
+
+# 1.2.1 (Test)
+
+- Kompakte Datumsfelder.
+- Kleinunternehmer: sieben TSV-Spalten; sonst BRUTTO/NETTO.
+- Datum/Uhrzeit und letzte Rechnungsnummer des letzten Exports.
+- Gemeinsame Seite, Speichern und Exportieren weiterhin getrennt.
+
 # Changelog
-
-## 1.2.0
-
-- Inklusiver Export ab auswählbarer Rechnung mit durchsuchbarer Liste.
-- Kompakte Datumsfelder (180 px).
-- Kleinunternehmer: sieben Spalten ohne Umsatzsteuerart-Feld; Brutto/Netto weiterhin acht.
-
-- Zeitraum, Filter und Buchungsdaten auf einer gemeinsamen Exportseite.
-- Einstellungen werden beim Exportieren gespeichert; Konfigurieren öffnet die Exportseite.
-- Letzter Export mit Zeitpunkt, Zeitraum, Anzahl und tatsächlicher letzter Rechnungsnummer.
-- Keine Überschreibung des letzten Exports bei Fehlern oder leeren Ergebnissen.
 
 ## 1.1.1
 
